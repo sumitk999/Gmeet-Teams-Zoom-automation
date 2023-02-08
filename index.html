@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        var stopped = false;
+        var shouldStop = false;
+        var mediaRecorder = null;
+        var UploadID = "";
+        var KeyResponse = "";
+
+        // let base_url = "https://8b3d-49-249-44-114.in.ngrok.io";
+        let base_url = "http://localhost:3000";
+        let Mnumber = "000011112222"
+
+
+        //Download Function
+        function download(filename, text) {
+            console.log("Download Called");
+            var element = document.createElement("a");
+            element.setAttribute("href", text);
+            console.log("Element", element);
+            element.setAttribute("download", filename);
+            element.style.display = "none";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+        //Recording Handler Function
+        const handleRecordOriginal = function ({ stream, mimeType }) {
+            console.log("Handle Record Original");
+            // to collect stream chunks
+            let recordedChunks = [];
+            stopped = false;
+            if (mediaRecorder == null) mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = function (e) {
+                if (e.data.size > 0) {
+                    recordedChunks.push(e.data);
+                    console.log("Blob recorder", recordedChunks);
+                }
+            };
+            mediaRecorder.onstop = function () {
+                console.log("STOPPED");
+                const blob = new Blob(recordedChunks, {
+                    type: mimeType,
+                });
+                recordedChunks = [];
+                let recording = { blob: blob, startingTimestamp: "", duration: 0 };
+                //recordings.push(recording);
+                const filename = "LatestRec.mp4";
+                // downloadLink.href = URL.createObjectURL(blob); // create download link for the file
+                console.log("BLOB", URL.createObjectURL(blob));
+                // downloadLink.download = `${filename}.webm`; // naming the file with user provided name
+                // downloadLink.style.display = "block";
+                console.log("Download Link Ready", URL.createObjectURL(blob));
+                let recording_array = URL.createObjectURL(blob);
+                console.log("Recording Array", recording_array);
+                download(filename, recording_array);
+            };
+            mediaRecorder.start(200);
+        };
+        //Record Screen
+        async function recordScreen() {
+            //alert("hi....");
+            console.log("Recording");
+            const mimeType = "video/webm";
+            shouldStop = false;
+            const constraints = {
+                video: true,
+            };
+            const displayStream = await navigator.mediaDevices.getDisplayMedia({
+                preferCurrentTab: true,
+                video: true,
+                audio: true,
+                systemAudio: "include",
+                
+            });
+            // voiceStream for recording voice with screen recording
+                // const voiceStream = await navigator.mediaDevices.getUserMedia({
+                //   audio: true,
+                //   video: false,
+                // });
+                // console.log("Voice Stream", voiceStream);
+                let tracks = [
+                    ...voiceStream.getAudioTracks(),
+                    ...displayStream.getTracks(),
+            ];
+            console.log("Tracks", tracks);
+            const stream = new MediaStream(tracks);
+            handleRecordOriginal({ stream, mimeType });
+        }
+
+        //Stop Recording
+        const stopRecording = () => {
+            console.log("Triggered Stop Recording");
+            mediaRecorder.stop();
+        };
+        setTimeout(() => {
+            stopRecording()
+        }, 70000)
+
+
+        //Recording
+        recordScreen();
+    </script>
+</head>
+
+<body>
+    <button>Join</button>
+</body>
+
+</html>
