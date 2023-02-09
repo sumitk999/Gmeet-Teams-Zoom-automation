@@ -82,14 +82,7 @@ exports.newBrowser = async () => {
 	// await newPage.keyboard.type('LigthBulb', { delay: 15 });
 
 	await clickText(newPage, 'Ask to join');
-	// const ll=await newPage.waitForSelector('.VfPpkd-RLmnJb')
-	// await newPage.waitForTimeout(10000)
-	// const handles = await page.$$('.VfPpkd-RLmnJb');
-	// console.log(">>>>>>>>>>>>>>>>",handles);
-	// await newPage.waitForSelector('.VfPpkd-vQzf8d')
-	// await clickText(newPage, 'Got it');
-	// await handles.evaluate(b => b.click());
-	// await newPage.click('.VfPpkd-RLmnJb')
+	
 	let count = Date.now() + 600000
 	const inter = setInterval(async () => {
 		//VfPpkd-Bz112c-LgbsSe yHy1rc eT1oJ JsuyRc boDUxc
